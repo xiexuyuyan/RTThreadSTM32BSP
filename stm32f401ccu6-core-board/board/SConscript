@@ -18,7 +18,8 @@ path += [cwd + '/CubeMX_Config/Inc']
 startup_path_prefix = SDK_LIB
 
 if rtconfig.PLATFORM in ['gcc']:
-    src += [startup_path_prefix + '/STM32F4xx_HAL/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s']
+    src += [startup_path_prefix + '/STM32F4xx_HAL/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xc.s']
+    # src += [cwd + '/CubeMX_Config/Startup/startup_stm32f401ccux.s']
 elif rtconfig.PLATFORM in ['armcc', 'armclang']:
     src += [startup_path_prefix + '/STM32F4xx_HAL/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s']
 elif rtconfig.PLATFORM in ['iccarm']:
@@ -31,7 +32,7 @@ elif rtconfig.PLATFORM in ['iccarm']:
 # STM32F479xx) || STM32F412Cx) || STM32F412Rx) || STM32F412Vx)
 # STM32F412Zx) || STM32F413xx) || STM32F423xx)
 # You can select chips from the list above
-CPPDEFINES = ['STM32F407xx']
+CPPDEFINES = ['STM32F401xC']
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES)
 
 Return('group')
