@@ -1,0 +1,41 @@
+diff --git a/tools/cmake.py b/tools/cmake.py
+index d938f9c78..dfa267f11 100644
+--- a/tools/cmake.py
++++ b/tools/cmake.py
+@@ -107,10 +107,16 @@ def GenerateCFiles(env,project):
+             cm_file.write("PROJECT(rtthread C ASM)\n")
+ 
+         cm_file.write("INCLUDE_DIRECTORIES(\n")
++        t0_index = 0
+         for i in info['CPPPATH']:
+             # use relative path
+             path = _make_path_relative(os.getcwd(), i)
+-            cm_file.write( "\t" + path.replace("\\", "/") + "\n")
++            t1_file_name = path.replace("\\", "/")
++            t2_file_name = re.sub('\\.\\./\\.\\./\\.\\.', 'rt-thread', t1_file_name, 1)
++            t3_file_name = re.sub('\\.\\./libraries', 'libraries', t2_file_name, 1)
++            print("[%d]: %s" % (t0_index, t3_file_name))
++            t0_index += 1
++            cm_file.write( "\t" + t3_file_name + "\n" )
+         cm_file.write(")\n\n")
+ 
+         cm_file.write("ADD_DEFINITIONS(\n")
+@@ -119,11 +125,17 @@ def GenerateCFiles(env,project):
+         cm_file.write(")\n\n")
+ 
+         cm_file.write("SET(PROJECT_SOURCES\n")
++        t0_index = 0
+         for group in project:
+             for f in group['src']:
+                 # use relative path
+                 path = _make_path_relative(os.getcwd(), os.path.normpath(f.rfile().abspath))
+-                cm_file.write( "\t" + path.replace("\\", "/") + "\n" )
++                t1_file_name = path.replace("\\", "/")
++                t2_file_name = re.sub('\\.\\./\\.\\./\\.\\.', 'rt-thread', t1_file_name, 1)
++                t3_file_name = re.sub('\\.\\./libraries', 'libraries', t2_file_name, 1)
++                print("[%d]: %s" % (t0_index, t3_file_name))
++                t0_index += 1
++                cm_file.write( "\t" + t3_file_name + "\n" )
+         cm_file.write(")\n\n")
+ 
+         if rtconfig.PLATFORM in ['gcc']:

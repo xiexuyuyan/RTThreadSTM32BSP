@@ -31,6 +31,16 @@ menu "On-chip Peripheral Drivers"
                 bool "Enable UART2 RX DMA"
                 depends on BSP_USING_UART2 && RT_SERIAL_USING_DMA
                 default n
+
+            config BSP_USING_UART6
+                bool "Enable UART6(Default A11(USB_DM) A12(USB_DP))"
+                depends on !RT_USING_USB
+                default n
+
+            config BSP_UART6_RX_USING_DMA
+                bool "Enable UART6 RX DMA"
+                depends on BSP_USING_UART6 && RT_SERIAL_USING_DMA
+                default n
         endif
 
     config BSP_USING_USBD
