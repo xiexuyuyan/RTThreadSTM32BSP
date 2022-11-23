@@ -24,7 +24,7 @@ menu "On-chip Peripheral Drivers"
         select RT_USING_SERIAL
         if BSP_USING_UART
             config BSP_USING_UART2
-                bool "Enable UART2"
+                bool "Enable UART2(PA2 PA3)"
                 default y
 
             config BSP_UART2_RX_USING_DMA
@@ -41,6 +41,17 @@ menu "On-chip Peripheral Drivers"
                 bool "Enable UART6 RX DMA"
                 depends on BSP_USING_UART6 && RT_SERIAL_USING_DMA
                 default n
+
+            config BSP_USING_UART1
+                bool "Enable UART1(Default A9(USB_VBUS) A10(USB_ID))"
+                depends on !RT_USING_USB_HOST
+                default n
+
+            config BSP_UART1_RX_USING_DMA
+                bool "Enable UART1 RX DMA"
+                depends on BSP_USING_UART1 && RT_SERIAL_USING_DMA
+                default n
+
         endif
 
     config BSP_USING_USBD
