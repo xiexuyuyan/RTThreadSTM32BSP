@@ -25,8 +25,7 @@ menu "On-chip Peripheral Drivers"
         if BSP_USING_UART
             menuconfig BSP_USING_UART2
                 bool "Enable UART2(PA2 PA3)"
-                depends on !RT_USING_USB_HOST
-                default n
+                default y
                 if BSP_USING_UART2
                     config BSP_UART2_RX_USING_DMA
                         bool "Enable UART2 RX DMA"
