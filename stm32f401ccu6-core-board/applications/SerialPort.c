@@ -1,23 +1,18 @@
-#include <at.h>
+#include <rtthread.h>
+
 #include "SerialPort.h"
 #include "SerialPort_log.h"
 
 static void initAtClientDevice(const char * atDeviceName);
 
 static void initAtClientDevice(const char * atDeviceName) {
-    struct at_client* oldDev = at_client_get_first();
-    if (oldDev != RT_NULL && oldDev->device != RT_NULL) {
-
-        rt_device_close(oldDev->device);
-    }
-
     struct rt_device* atClientDevice = RT_NULL;
     atClientDevice = rt_device_find(atDeviceName);
     if (atClientDevice == RT_NULL) {
         LOG_I("Null device %s.", atDeviceName);
     } else {
         LOG_I("Find device %s.", atDeviceName);
-        int ret = at_client_init(atDeviceName, 128);
+        int ret = -1;
         switch(ret) {
             case 0:
                 LOG_I("initialize at_client with %s success.", atDeviceName);

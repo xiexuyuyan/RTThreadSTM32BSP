@@ -75,9 +75,8 @@
 
 #define RT_USING_DEVICE_IPC
 #define RT_USING_SERIAL
-#define RT_USING_SERIAL_V1
+#define RT_USING_SERIAL_V2
 #define RT_SERIAL_USING_DMA
-#define RT_SERIAL_RB_BUFSZ 64
 #define RT_USING_PIN
 
 /* Using USB */
@@ -226,7 +225,11 @@
 #define BSP_USING_GPIO
 #define BSP_USING_UART
 #define BSP_USING_UART2
+#define BSP_UART2_RX_BUFSIZE 256
+#define BSP_UART2_TX_BUFSIZE 0
 #define BSP_USING_UART1
+#define BSP_UART1_RX_BUFSIZE 256
+#define BSP_UART1_TX_BUFSIZE 0
 
 /* Board extended module Drivers */
 

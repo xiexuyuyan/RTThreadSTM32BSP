@@ -25,7 +25,6 @@ SET(CMAKE_CXX_STANDARD 14)
 PROJECT(rtthread C CXX ASM)
 INCLUDE_DIRECTORIES(
 	applications
-	../../../components/net/at/include
 	../../../components/libc/compilers/newlib
 	../../../components/libc/compilers/common/include
 	../../../libcpu/arm/common
@@ -57,12 +56,9 @@ ADD_DEFINITIONS(
 )
 
 SET(PROJECT_SOURCES
+	applications/main.c
 	applications/SerialPort.c
 	applications/SerialPortService.c
-	applications/main.c
-	../../../components/net/at/src/at_utils.c
-	../../../components/net/at/src/at_cli.c
-	../../../components/net/at/src/at_client.c
 	../../../components/libc/compilers/common/cctype.c
 	../../../components/libc/compilers/common/cstdio.c
 	../../../components/libc/compilers/common/cstdlib.c
@@ -83,13 +79,13 @@ SET(PROJECT_SOURCES
 	../../../components/drivers/ipc/waitqueue.c
 	../../../components/drivers/ipc/workqueue.c
 	../../../components/drivers/misc/pin.c
-	../../../components/drivers/serial/serial.c
+	../../../components/drivers/serial/serial_v2.c
 	../libraries/STM32F4xx_HAL/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xc.s
 	board/CubeMX_Config/Src/stm32f4xx_hal_msp.c
 	board/board.c
 	../libraries/HAL_Drivers/drv_common.c
 	../libraries/HAL_Drivers/drv_gpio.c
-	../libraries/HAL_Drivers/drv_usart.c
+	../libraries/HAL_Drivers/drv_usart_v2.c
 	../../../components/finsh/cmd.c
 	../../../components/finsh/msh_parse.c
 	../../../components/finsh/msh.c
@@ -107,23 +103,23 @@ SET(PROJECT_SOURCES
 	../../../src/scheduler.c
 	../../../src/thread.c
 	../../../src/timer.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c
 	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c
 	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c
-	../libraries/STM32F4xx_HAL/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c
 	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c
+	../libraries/STM32F4xx_HAL/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c
+	../libraries/STM32F4xx_HAL/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c
 )
 
 LINK_DIRECTORIES(
@@ -135,5 +131,17 @@ LINK_LIBRARIES(
 )
 
 ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}.elf ${PROJECT_SOURCES})
-ADD_CUSTOM_COMMAND(TARGET ${CMAKE_PROJECT_NAME}.elf POST_BUILD 
-COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin COMMAND ${CMAKE_SIZE} ${CMAKE_PROJECT_NAME}.elf)
+ADD_CUSTOM_COMMAND(
+		TARGET ${CMAKE_PROJECT_NAME}.elf
+		POST_BUILD
+		COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin
+		COMMAND ${CMAKE_SIZE} ${CMAKE_PROJECT_NAME}.elf
+
+		COMMAND ${CMAKE_COMMAND} -E
+			make_directory "/mnt/c/Users/23517/Documents/Todelete/${CMAKE_PROJECT_NAME}"
+
+		COMMAND ${CMAKE_COMMAND} -E
+			copy_if_different
+				${CMAKE_PROJECT_NAME}.bin
+				"/mnt/c/Users/23517/Documents/Todelete/${CMAKE_PROJECT_NAME}/${CMAKE_PROJECT_NAME}.bin"
+)
