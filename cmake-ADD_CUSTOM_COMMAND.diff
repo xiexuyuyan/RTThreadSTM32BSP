@@ -1,0 +1,26 @@
+diff --git a/tools/cmake.py b/tools/cmake.py
+index d938f9c78..5fa267705 100644
+--- a/tools/cmake.py
++++ b/tools/cmake.py
+@@ -142,7 +142,20 @@ def GenerateCFiles(env,project):
+             cm_file.write(")\n\n")
+ 
+             cm_file.write("ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}.elf ${PROJECT_SOURCES})\n")
+-            cm_file.write("ADD_CUSTOM_COMMAND(TARGET ${CMAKE_PROJECT_NAME}.elf POST_BUILD \nCOMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin COMMAND ${CMAKE_SIZE} ${CMAKE_PROJECT_NAME}.elf)")
++            cm_file.write("ADD_CUSTOM_COMMAND(\n"
++                          "        TARGET ${CMAKE_PROJECT_NAME}.elf\n"
++                          "        POST_BUILD\n"
++                          "        COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin\n"
++                          "        COMMAND ${CMAKE_SIZE} ${CMAKE_PROJECT_NAME}.elf\n"
++                          "\n"
++                          "        COMMAND ${CMAKE_COMMAND} -E\n"
++                          "            make_directory \"/mnt/c/Users/23517/Documents/Todelete/${CMAKE_PROJECT_NAME}\"\n"
++                          "\n"
++                          "        COMMAND ${CMAKE_COMMAND} -E\n"
++                          "            copy_if_different\n"
++                          "                ${CMAKE_PROJECT_NAME}.bin\n"
++                          "                \"/mnt/c/Users/23517/Documents/Todelete/${CMAKE_PROJECT_NAME}/${CMAKE_PROJECT_NAME}.bin\"\n"
++                          ")\n")
+         elif rtconfig.PLATFORM in ['armcc', 'armclang']:
+             cm_file.write("ADD_EXECUTABLE(${CMAKE_PROJECT_NAME} ${PROJECT_SOURCES})\n")
+             cm_file.write("ADD_CUSTOM_COMMAND(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD \nCOMMAND ${CMAKE_FROMELF} --bin ${CMAKE_PROJECT_NAME}.elf --output ${CMAKE_PROJECT_NAME}.bin COMMAND ${CMAKE_FROMELF} -z ${CMAKE_PROJECT_NAME}.elf)")
