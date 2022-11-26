@@ -12,6 +12,8 @@
 #include <rtdevice.h>
 #include <board.h>
 
+#include "SerialPort.h"
+
 #define LOG_TAG "main"
 #include "main_log.h"
 
@@ -40,7 +42,6 @@ int main(void)
     rt_pin_irq_enable(KEY0_PIN, PIN_IRQ_ENABLE);
 
     rt_device_t vcom = rt_device_find("vcom");
-    char buff[15];
     if (rt_device_open(
             vcom, RT_DEVICE_OFLAG_RDWR
             | RT_DEVICE_FLAG_INT_RX
@@ -49,6 +50,7 @@ int main(void)
         return -1;
     }
 
+    char buff[15];
     char* const waiting = "waiting...";
     char* s = waiting;
     char* d = buff;
@@ -60,13 +62,27 @@ int main(void)
         rt_thread_mdelay(1000);
 
         if (count < 4) {
-            rt_device_write(vcom, 0, (rt_sprintf(buff, "%s%d%c", waiting, count, '\n'), buff), strlen(buff));
+            rt_device_write(
+                vcom, 0
+                , (rt_sprintf(buff, "%s%d\n\0"
+                        , waiting, count), buff)
+                , strlen(buff));
         } else if (count == 4) {
-            rt_device_write(vcom, 0, (rt_sprintf(buff, "%s%c", "last second", '\n'), buff), strlen(buff));
+            rt_device_write(
+                vcom, 0
+                , (rt_sprintf(buff, "%s\n\0"
+                        , "last second"), buff)
+                , strlen(buff));
             rt_device_close(vcom);
         } else if (count == 5) {
             rt_console_set_device("vcom");
             finsh_set_device("vcom");
+
+            rt_device_write(vcom, 0, (
+                rt_sprintf(buff, "%s\0"
+                    , "msh >"), buff), strlen(buff));
+
+            initSerialPort("uart2");
         }
     }
 
