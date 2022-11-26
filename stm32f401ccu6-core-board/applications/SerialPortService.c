@@ -4,8 +4,6 @@
 
 #include <rtthread.h>
 
-extern rt_device_t serialPort;
-
 #define THREAD_NAME "SerialPortService"
 #define THREAD_PRIORITY 25
 #define THREAD_STACK_SIZE 512
@@ -14,30 +12,16 @@ extern rt_device_t serialPort;
 static rt_thread_t serialPortService = RT_NULL;
 static void (*serialPortRunnable)(void* parameter);
 
-static void runEntry(void* parameter) {
-    int count = 0;
-    char buff[64];
-    buff[63] = '\0';
-    while (++count) {
-        rt_device_write(serialPort, 0, (
-            rt_sprintf(buff, "%s%d\r\n\0"
-                , "count SerialPort: ", count)
-            , buff), strlen(buff));
-
-        rt_thread_mdelay(1000);
-    }
-}
-
-
 static void runLoopBackTestEntry(void* parameter) {
-    char buff[10];
+    rt_size_t MAX_READ = 128;
+    char buff[MAX_READ];
     while (1) {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < MAX_READ; i++) {
             buff[i] = '\0';
         }
 
-        rt_size_t readLen = readInner(buff, 0, 9);
-        LOG_I("str: %s, readLen: %d", buff, readLen);
+        rt_size_t readLen = readInner(buff, 0, MAX_READ-1);
+        LOG_I("str: [\n%s\n], readLen: %d", buff, readLen);
     }
 }
 
