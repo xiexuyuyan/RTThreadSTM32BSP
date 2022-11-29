@@ -127,7 +127,7 @@ int serial_send(int argc, char** argv) {
         buff[i] = '\0';
     }
 
-    rt_sprintf(buff, "%s\r\n", argv[1]);
+    rt_sprintf(buff, "%s", argv[1]);
 
     rt_device_write(serialPort, -1, buff, strlen(buff));
 
@@ -137,3 +137,24 @@ int serial_send(int argc, char** argv) {
 }
 
 MSH_CMD_EXPORT(serial_send, send cmd to serial port);
+
+int serial_sendln(int argc, char** argv) {
+    if (argc < 2) {
+        return -1;
+    }
+
+    char buff[20];
+    for (int i = 0; i < 20; i++) {
+        buff[i] = '\0';
+    }
+
+    rt_sprintf(buff, "%s\r\n", argv[1]);
+
+    rt_device_write(serialPort, -1, buff, strlen(buff));
+
+    LOG_I("write(len = %d): %s.", strlen(buff), buff);
+
+    return 0;
+}
+
+MSH_CMD_EXPORT(serial_sendln, send cmd to serial port with ln);

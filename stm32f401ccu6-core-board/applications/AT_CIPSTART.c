@@ -3,6 +3,11 @@
 #include "SerialPort.h"
 #include "SerialPort_log.h"
 
+#ifdef DBG_TAG
+#undef DBG_TAG
+#define DBG_TAG "AT_CIPSTART"
+#endif
+
 
 static int parseCIPSTART(const char* src, const int lenSrc) {
     int crList[10];
@@ -68,9 +73,9 @@ int atCIPSTART() {
     LOG_I("read len = %d, str = [\n%s\n]", readLen, buff);
 
     int ret = parseCIPSTART(buff, strlen(buff));
-    LOG_I("parse ret = %d", ret);
+    LOG_I("atCIPSTART parse ret = %d", ret);
 
-    return 0;
+    return ret;
 }
 
 MSH_CMD_EXPORT(atCIPSTART, at CIPSTART);

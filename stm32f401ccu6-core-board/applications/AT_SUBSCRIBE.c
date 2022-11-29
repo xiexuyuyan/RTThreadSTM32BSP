@@ -3,11 +3,18 @@
 #include "SerialPort.h"
 #include "SerialPort_log.h"
 
-void exitCIPSEND() {
+#ifdef DBG_TAG
+#undef DBG_TAG
+#define DBG_TAG "AT_SUBSCRIBE"
+#endif
+
+
+static void exitCIPSEND() {
     rt_device_t atClient = rt_device_find("uart1");
     char buffCIPSEND_FINISH[4] = "+++";
     rt_device_write(atClient, -1,
                     buffCIPSEND_FINISH, strlen(buffCIPSEND_FINISH));
+    rt_thread_mdelay(100);
 }
 
 int atSubscribe() {
@@ -40,7 +47,7 @@ int atSubscribe() {
             if (buff[readLen-1] == '>') {
                 exitCIPSEND();
             }
-            LOG_E("CIPSEND not OK");
+            LOG_E("atSubscribe CIPSEND not OK");
             return err;
         }
     }
@@ -50,7 +57,7 @@ int atSubscribe() {
     {
         char buffSubscribe[128] =
                 "cmd=1&uid=f56c42717ac6d4ed32da64de41d6fd9a"
-                "&topic=TestLed002\r\n";
+                "&topic=NightLed002\r\n";
         rt_device_write(atClient, -1,
                         buffSubscribe, strlen(buffSubscribe));
         memset(buff, 0, MAX_READ);

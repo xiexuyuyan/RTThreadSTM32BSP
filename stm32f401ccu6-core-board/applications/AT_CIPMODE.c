@@ -3,6 +3,11 @@
 #include "SerialPort.h"
 #include "SerialPort_log.h"
 
+#ifdef DBG_TAG
+#undef DBG_TAG
+#define DBG_TAG "AT_CIPMODE"
+#endif
+
 
 static int parseCIPMODE(const char* src, const int lenSrc) {
     int crList[10];
@@ -14,7 +19,7 @@ static int parseCIPMODE(const char* src, const int lenSrc) {
     for (int i = 0; i < crCount-1; i++) {
         memset(buff, 0, 64);
         arraycopy(src, crList[i]+1, buff, 0, crList[i+1] - crList[i] - 2);
-        LOG_I("buff = [%s]\n", buff);
+        // LOG_I("buff = [%s]\n", buff);
     }
 
     if (crCount == 0) {
@@ -61,9 +66,9 @@ int atCIPMODE() {
     LOG_I("read len = %d, str = [\n%s\n]", readLen, buff);
 
     int ret = parseCIPMODE(buff, strlen(buff));
-    LOG_I("parse ret = %d", ret);
+    LOG_I("atCIPMODE parse ret = %d", ret);
 
-    return 0;
+    return ret;
 }
 
 MSH_CMD_EXPORT(atCIPMODE, at CIPMODE);

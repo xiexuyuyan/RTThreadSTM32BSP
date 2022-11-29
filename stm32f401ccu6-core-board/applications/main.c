@@ -17,6 +17,7 @@
 
 /* defined the LED0 pin: PC13 */
 #define LED0_PIN    GET_PIN(C, 13)
+#define LED1_PIN    GET_PIN(A, 1)
 /* defined the KEY0 pin: PA0 */
 #define KEY0_PIN    GET_PIN(A, 0)
 
@@ -24,6 +25,7 @@
 static void keyEventCallback(void* args) {
     int before = rt_pin_read(LED0_PIN);
     rt_pin_write(LED0_PIN, (before == PIN_LOW ? PIN_HIGH : PIN_LOW));
+    rt_pin_write(LED1_PIN, (before == PIN_LOW ? PIN_HIGH : PIN_LOW));
 }
 
 int main(void)
@@ -31,7 +33,9 @@ int main(void)
     int count = 1;
     /* set LED0 pin mode to output */
     rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
+    rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
     rt_pin_write(LED0_PIN, PIN_HIGH);
+    rt_pin_write(LED1_PIN, PIN_HIGH);
 
     rt_pin_mode(KEY0_PIN, PIN_MODE_INPUT_PULLUP);
     rt_pin_attach_irq(
