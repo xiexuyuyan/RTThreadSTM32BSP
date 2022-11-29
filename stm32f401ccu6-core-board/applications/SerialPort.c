@@ -19,10 +19,10 @@ static struct rt_semaphore rx_sem;
  * @param last the last status of read_byte
  * @return int the range 0 to 255
  */
-static int read_byte(enum LAST_READ_STAT last) {
+static int read_byte(enum LAST_READ_STAT last, rt_int32_t timeout) {
     char ch = '\0';
     if (last == END_OF_STREAM) {
-        rt_sem_take(&rx_sem, RT_WAITING_FOREVER);
+        rt_sem_take(&rx_sem, timeout);
     } else {
         if (rt_sem_trytake(&rx_sem) != RT_EOK) {
             return END_OF_STREAM;
@@ -36,12 +36,12 @@ static int read_byte(enum LAST_READ_STAT last) {
     return ch;
 }
 
-static rt_size_t read_inner(char* buff, rt_size_t off, rt_size_t size) {
+static rt_size_t read_inner(char* buff, rt_size_t off, rt_size_t size, rt_int32_t timeout) {
     int last = END_OF_STREAM;
     rt_size_t count = 0;
 
     while (1) {
-        last = read_byte(last);
+        last = read_byte(last, timeout);
 
         if (last == END_OF_STREAM || last == EXCEPTION_THROWN) {
             return count;
@@ -55,12 +55,12 @@ static rt_size_t read_inner(char* buff, rt_size_t off, rt_size_t size) {
     return count;
 }
 
-rt_size_t readInner(char* buff, rt_size_t off, rt_size_t size) {
+rt_size_t readInner(char* buff, rt_size_t off, rt_size_t size, rt_int32_t timeout) {
     if (buff == NULL) {
         return 0;
     }
 
-    return read_inner(buff, off, size);
+    return read_inner(buff, off, size, timeout);
 }
 
 static rt_err_t onSerialPortRXIndicate(rt_device_t dev, rt_size_t len) {

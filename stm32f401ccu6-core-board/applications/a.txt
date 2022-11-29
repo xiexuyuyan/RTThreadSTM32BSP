@@ -1,0 +1,341 @@
+41 54 2B 43 49 46 53 52 0D
+0D 0A
+
+2B 43 49 46 53 52 3A 53 54 41 49 50 2C 22 31 39 32 2E 35 2E 31 2E 33 31 22
+0D 0A
+
+2B 43 49 46 53 52 3A 53 54 41 4D 41 43 2C 22 61 63 3A 30 62 3A 66 62 3A 63 37 3A 37 62 3A 36 64 22
+0D 0A
+
+0D 0A
+
+4F 4B
+0D 0A
+
+
+41 54 2B 43 49 50 53 54 41 52 54 3D 22 54 43 50 22 2C 22 31 31 39 2E 39 31 2E 31 30 39 2E 31 38 30 22 2C 38 33 34 34 0D 0D 0A
+
+
+
+1. onBootup
+    AT: OK
+
+onRestart
+
+onStation
+
+onWifiConnected
+
+onServerConnected
+
+
+#include <stdio.h>
+#include "Serialport.h"
+
+using namespace yuyan;
+
+#include "utils.h"
+
+
+static int parseCIFSR(const char* src, const int lenSrc) {
+    int crList[10];
+    memset(crList, 0, 10);
+
+    int crCount = split(src, lenSrc, crList);
+
+    char buff[64];
+    for (int i = 0; i < crCount-1; i++) {
+        memset(buff, 0, 64);
+        arraycopy(src, crList[i]+1, buff, 0, crList[i+1] - crList[i] - 2);
+        printf("buff = [%s]\n", buff);
+    }
+
+    if (crCount == 0) {
+        return -1;
+    }
+
+    memset(buff, 0, 64);
+    arraycopy(src, 0, buff, 0, crList[0] - 2);
+    if (0 != strcmp(buff, "AT+CIFSR")) {
+        return -2;
+    }
+
+    memset(buff, 0, 64);
+    arraycopy(src, crList[crCount-2]+1, buff, 0, crList[crCount-1] - crList[crCount-2] - 2);
+    if (0 != strcmp(buff, "OK")) {
+        return -3;
+    }
+
+    memset(buff, 0, 64);
+    arraycopy(src, crList[0]+1, buff, 0, crList[1] - crList[0] - 2);
+    if (0 == strcmp(buff, "+CIFSR:STAIP,\"0.0.0.0\"")) {
+        return -4;
+    }
+
+    return 0;
+}
+
+
+static int parseCIPMODE(const char* src, const int lenSrc) {
+    int crList[10];
+    memset(crList, 0, 10);
+
+    int crCount = split(src, lenSrc, crList);
+
+    char buff[64];
+    for (int i = 0; i < crCount-1; i++) {
+        memset(buff, 0, 64);
+        arraycopy(src, crList[i]+1, buff, 0, crList[i+1] - crList[i] - 2);
+        printf("buff = [%s]\n", buff);
+    }
+
+    if (crCount == 0) {
+        return -1;
+    }
+
+    memset(buff, 0, 64);
+    arraycopy(src, 0, buff, 0, crList[0] - 2);
+    if (0 != strcmp(buff, "AT+CIPMODE=1")) {
+        return -2;
+    }
+
+    memset(buff, 0, 64);
+    arraycopy(src, crList[crCount-2]+1, buff, 0, crList[crCount-1] - crList[crCount-2] - 2);
+    if (0 != strcmp(buff, "OK")) {
+        return -3;
+    }
+
+    return 0;
+}
+
+static int parseCIPSTART(const char* src, const int lenSrc) {
+    int crList[10];
+    memset(crList, 0, 10);
+
+    int crCount = split(src, lenSrc, crList);
+
+    char buff[64];
+    for (int i = 0; i < crCount-1; i++) {
+        memset(buff, 0, 64);
+        arraycopy(src, crList[i]+1, buff, 0, crList[i+1] - crList[i] - 2);
+        printf("buff = [%s]\n", buff);
+    }
+
+    if (crCount == 0) {
+        return -1;
+    }
+
+    memset(buff, 0, 64);
+    arraycopy(src, 0, buff, 0, crList[0] - 2);
+    if (0 != strcmp(buff, "AT+CIPSTART=\"TCP\",\"119.91.109.180\",8344")) {
+        return -2;
+    }
+
+    memset(buff, 0, 64);
+    arraycopy(src, crList[crCount-2]+1, buff, 0, crList[crCount-1] - crList[crCount-2] - 2);
+    if (0 != strcmp(buff, "OK")) {
+        return -3;
+    }
+
+    memset(buff, 0, 64);
+    arraycopy(src, crList[0]+1, buff, 0, crList[1] - crList[0] - 2);
+    if (0 != strcmp(buff, "CONNECT")) {
+        return -4;
+    }
+
+    return 0;
+}
+
+
+int main(int argc, char** argv) {
+    int err = 0;
+    char buffRead[128];
+    int readLen = 0;
+    char const* portname = "\\\\.\\COM11";
+    Serialport* serialport = new Serialport(portname);
+
+    serialport->open();
+    serialport->setReadTimeoutMs(3000);
+
+
+    char buffCIFSR[64] = "AT+CIFSR\r\n";
+    serialport->write(buffCIFSR, strlen(buffCIFSR));
+    memset(buffRead, '\0', 128);
+    readLen = serialport->readBlocked(buffRead);
+    printf("readLen = %d, str = [\n%s\n]\n", readLen, buffRead);
+    err = parseCIFSR(buffRead, readLen);
+    printf("err = %d\n", err);
+
+    return 0;
+
+    char buffCIPSTART[64] = "AT+CIPSTART=\"TCP\",\"119.91.109.180\",8344\r\n";
+    serialport->write(buffCIPSTART, strlen(buffCIPSTART));
+    memset(buffRead, '\0', 128);
+    readLen = serialport->readBlocked(buffRead);
+    if (readLen == strlen(buffCIPSTART)+1) {
+        printf("connecting...\n");
+        readLen += serialport->readBlocked(buffRead + readLen);
+        err = parseCIPSTART(buffRead, readLen);
+    } else {
+        err = -1;
+    }
+    printf("readLen = %d, str = [\n%s\n]\n", readLen, buffRead);
+    printf("err = %d\n", err);
+
+
+
+    char buffCIPMODE[64] = "AT+CIPMODE=1\r\n";
+    serialport->write(buffCIPMODE, strlen(buffCIPMODE));
+    memset(buffRead, '\0', 128);
+    readLen = serialport->readBlocked(buffRead);
+    printf("readLen = %d, str = [\n%s\n]\n", readLen, buffRead);
+    err = parseCIPMODE(buffRead, readLen);
+    printf("err = %d\n", err);
+
+
+
+    char buffCIPSEND[64] = "AT+CIPSEND\r\n";
+    serialport->write(buffCIPSEND, strlen(buffCIPSEND));
+    memset(buffRead, '\0', 128);
+    readLen = serialport->readBlocked(buffRead);
+    printf("readLen = %d, str = [\n%s\n]\n", readLen, buffRead);
+    if (0 == strcmp("AT+CIPSEND\r\r\n\r\nOK\r\n\r\n>", buffRead)) {
+        err = 0;
+    } else {
+        err = -1;
+    }
+    printf("err = %d\n", err);
+
+    char buffSubscribe[128] = "cmd=1&uid=f56c42717ac6d4ed32da64de41d6fd9a&topic=TestLed002\r\n";
+    serialport->write(buffSubscribe, strlen(buffSubscribe));
+    memset(buffRead, '\0', 128);
+    readLen = serialport->readBlocked(buffRead);
+    printf("readLen = %d, str = [\n%s\n]\n", readLen, buffRead);
+    if (0 == strcmp("cmd=1&res=1\r\n", buffRead)) {
+        err = 0;
+    } else {
+        err = -1;
+    }
+    printf("err = %d\n", err);
+
+
+    while (1) {
+
+    char buffPing[128] = "cmd=0&msg=ping\r\n";
+    serialport->write(buffPing, strlen(buffPing));
+    memset(buffRead, '\0', 128);
+    serialport->setReadTimeoutMs(3000);
+    readLen = serialport->readBlocked(buffRead);
+    printf("readLen = %d, str = [\n%s\n]\n", readLen, buffRead);
+    if (0 == strcmp("cmd=0&res=1\r\n", buffRead)) {
+        err = 0;
+    } else {
+        err = -1;
+        return -1;
+    }
+    printf("ping ret = %d\n", err);
+
+
+    memset(buffRead, '\0', 128);
+    serialport->setReadTimeoutMs(55000);
+    readLen = serialport->readBlocked(buffRead);
+
+    if (readLen <= 0) continue;
+
+    printf("readLen = %d, str = [\n%s\n]\n", readLen, buffRead);
+
+    char buffRead_T_Subscribe[128];
+    memset(buffRead_T_Subscribe, '\0', 128);
+    // cmd=2&uid=f56c42717ac6d4ed32da64de41d6fd9a&topic=TestLed002&msg=12
+    arraycopy(buffRead, 0, buffRead_T_Subscribe, 0, 64);
+    if (0 == strcmp("cmd=2&uid=f56c42717ac6d4ed32da64de41d6fd9a&topic=TestLed002&msg=", buffRead_T_Subscribe)) {
+        memset(buffRead_T_Subscribe, '\0', 128);
+        arraycopy(buffRead, 64, buffRead_T_Subscribe, 0, 3);
+        if (0 == strcmp("on\r", buffRead_T_Subscribe)) {
+            printf("The light on\n");
+        } else if (0 == strcmp("off", buffRead_T_Subscribe)) {
+            printf("The light off\n");
+        } else if (0 == strcmp("on#", buffRead_T_Subscribe)) {
+            int degree = 0;
+            memset(buffRead_T_Subscribe, '\0', 128);
+            arraycopy(buffRead, 67, buffRead_T_Subscribe, 0, 3);
+            if ('\r' == buffRead_T_Subscribe[1]) {
+                degree = buffRead_T_Subscribe[0] - '0';
+            } else if (0 == strcmp("100", buffRead_T_Subscribe)) {
+                degree = 100;
+            } else if ('\r' == buffRead_T_Subscribe[2]) {
+                int dec_10 = buffRead_T_Subscribe[0] - '0';
+                int dec_1 = buffRead_T_Subscribe[1] - '0';
+                degree = dec_10 * 10 + dec_1;
+            }
+
+            printf("The light on, level = %d\n", degree);
+        }
+    }
+
+    }
+
+    return 0;
+}
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void arraycopy(
+    const char src[], const int srcPos
+    , char dest[], const int destPos
+    , const int length) {
+
+    for(int i = 0; i < length; i++) {
+        dest[i + destPos] = src[i + srcPos];
+    }
+}
+
+
+/**
+ * split src by \r\n
+ * des array mapped every \n.
+ * return count of \r\n
+ */
+int split(const char* src, const int lenSrc, int* des) {
+    if (lenSrc <= 2) {
+        return 0;
+    }
+
+    if (src[0] == '\r' && src[1] == '\n') {
+        return 0;
+    }
+
+    int count = 0;
+    for (int i = 0; i < lenSrc-1; i++) {
+        if (src[i] == '\r' && src[i+1] == '\n') {
+            des[count++] = i+1;
+        }
+    }
+
+    return count;
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void arraycopy(
+    const char src[], const int srcPos
+    , char dest[], const int destPos
+    , const int length);
+
+int split(const char* src, const int lenSrc, int* des);
+
+#ifdef __cplusplus
+}
+#endif
+

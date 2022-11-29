@@ -20,7 +20,7 @@ static void runLoopBackTestEntry(void* parameter) {
             buff[i] = '\0';
         }
 
-        rt_size_t readLen = readInner(buff, 0, MAX_READ-1);
+        rt_size_t readLen = readInner(buff, 0, MAX_READ-1, RT_WAITING_FOREVER);
         LOG_I("str: [\n%s\n], readLen: %d", buff, readLen);
     }
 }

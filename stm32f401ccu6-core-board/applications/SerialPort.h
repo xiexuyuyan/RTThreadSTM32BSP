@@ -9,6 +9,6 @@ enum LAST_READ_STAT{
 };
 
 int initSerialPort(const char* name);
-rt_size_t readInner(char* buff, rt_size_t off, rt_size_t size);
+rt_size_t readInner(char* buff, rt_size_t off, rt_size_t size, rt_int32_t timeout);
 
 #endif // SERIAL_PORT_H
